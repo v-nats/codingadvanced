@@ -14,14 +14,12 @@ body {
   color: white;
 }
 
-
-
 .swiper {
   width: 100%;
   height: 60vh;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
 }
 
 .swiper-slide {
@@ -44,10 +42,6 @@ body {
   transform: rotateY(10deg);
 }
 
-h1 {
-  margin-bottom: 20px;
-  font-size: 2.5em;
-}
 
 
 .swiper-slide img {
@@ -64,17 +58,15 @@ h1 {
 
 .swiper-slide h4 {
   position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8); 
-  padding: 10px 15px; 
-  border-radius: 10px; /* Afgeronde hoeken */
-  font-size: 1.8em; /* Grotere lettergrootte */
-  font-family: 'Arial', sans-serif; /* Aangepast lettertype */
-  color: #ffffff; /* Witte tekstkleur */
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); /* Tekstschaduw */
-  letter-spacing: 1px; /* Letterafstand */
+  bottom: 20px; /* Plaats het element 20px vanaf de onderkant */
+  left: 50%; /* Plaats het element in het horizontale midden */
+  transform: translateX(-50%); /* Centreer het element perfect horizontaal */
+  padding: 10px 6px;
+  border-radius: 10px;
+  font-size: 3em;
+  font-family: 'Arial', sans-serif;
+  color: #ffffff;
+  letter-spacing: 1px;
   font-weight: 600;
 }
 
@@ -86,8 +78,8 @@ h1 {
   display: flex;
   align-items: center;
   z-index: 10;
-  background-color: rgba(0, 0, 0, 0.8); 
-  padding: 5px 7.5px;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 5px 5px;
   border-radius: 5px;
 }
 
@@ -102,11 +94,38 @@ h1 {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 :root {
   --swiper-navigation-color: white;
   --swiper-pagination-color: white;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: white;
+  z-index: 100;
+}
+
+.swiper-pagination {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  z-index: 100;
+}
+
+.swiper-pagination-bullet {
+  background: white;
+  opacity: 0.8;
+}
+
+.swiper-pagination-bullet-active {
+  opacity: 1;
 }
