@@ -7,6 +7,12 @@ body {
   background: linear-gradient(to bottom right, #2c3e50, #bdc3c7);
 }
 
+h1 {
+  font-size: 5em !important; /* Grotere waarde om te testen */
+  font-weight: bold;
+  padding-bottom: 60px !important;
+   }
+
 .container {
   width: 90%;
   max-width: 1200px;
