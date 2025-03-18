@@ -12,7 +12,7 @@ const cities = [
   { name: "Brussel", image: "images/img2.jpg" },
   { name: "Moscow", image: "images/img3.jpg" },
   { name: "Tokyo", image: "images/img4.jpg" },
-  { name: "Sydney", image: "images/img5.jpg" }
+  { name: "Sydney", image: "images/img5.jpg" } // TEST
 ];
 
 const swiper = new Swiper('.swiper', {
