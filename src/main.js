@@ -1,100 +1,120 @@
-import './style.css';
-import './reset.css';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Swiper from 'swiper';
-import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import { apiKey } from './secret.js';
 
-const cities = [
-  { name: "Ghana", image: "images/img1.jpg" },
-  { name: "Brussel", image: "images/img2.jpg" },
-  { name: "Moscow", image: "images/img3.jpg" },
-  { name: "Tokyo", image: "images/img4.jpg" },
-  { name: "Sydney", image: "images/img5.jpg" } // TEST
-];
+// Basis setup voor Three.js
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+document.getElementById('threejs-container').appendChild(renderer.domElement);
 
-const swiper = new Swiper('.swiper', {
-  modules: [Navigation, Pagination],
-  direction: 'horizontal',
-  loop: true,
-  slidesPerView: 3, // Toon 5 afbeeldingen tegelijk
-  centeredSlides: true,
-  pagination: {
-    el: '.swiper-pagination',
-    clickable: true,
-  },
-  navigation: {
-    nextEl: '.swiper-button-next',
-    prevEl: '.swiper-button-prev',
-  },
+camera.position.set(0, 0, 10);
+
+// Voeg belichting toe
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+directionalLight.position.set(5, 5, 5);
+scene.add(ambientLight, directionalLight);
+
+// Voeg OrbitControls toe
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.1;
+
+// Textuur laden en aarde maken
+const textureLoader = new THREE.TextureLoader();
+textureLoader.load('images/2k_earth_daymap.jpg', (texture) => {
+  const material = new THREE.MeshStandardMaterial({ map: texture });
+  const geometry = new THREE.SphereGeometry(5, 64, 64);
+  const earth = new THREE.Mesh(geometry, material);
+  scene.add(earth);
+
+  // Voeg steden toe met sprites en markers
+  addCityMarkers(earth);
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
 });
 
+async function getWeatherData(city) {
+  const apiKey = '2a6b6d53be7d7b14c3cf1da5900016db'; // Vervang dit door je eigen API-sleutel
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
-
-async function getCoordinates(cityName) {
-  const geocodingUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${apiKey}`;
   try {
-    const response = await fetch(geocodingUrl);
-    if (!response.ok) {
-      throw new Error(`Geocoding API error: ${response.status}`);
-    }
+    const response = await fetch(url);
     const data = await response.json();
-    if (data.length === 0) {
-      throw new Error(`No coordinates found for ${cityName}`);
-    }
-    return { lat: data[0].lat, lon: data[0].lon };
+    return data.main.temp; // Retourneer de temperatuur
   } catch (error) {
-    console.error("Error getting coordinates:", error);
+    console.error('Fout bij het ophalen van weersgegevens:', error);
     return null;
   }
 }
 
-async function getWeatherData(lat, lon) {
-  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
-  try {
-    const response = await fetch(apiUrl);
-    if (!response.ok) {
-      throw new Error(`Weather API error: ${response.status}`);
+async function addCityMarkers(earth) {
+  const cities = [
+    { name: 'Ghana', lat: 7.9465, lon: -1.0232 },
+    { name: 'Brussel', lat: 50.8503, lon: 4.3517 },
+    { name: 'Moscow', lat: 55.7558, lon: 37.6176 },
+    { name: 'Tokyo', lat: 35.6895, lon: 139.6917 },
+    { name: 'Sydney', lat: -33.8688, lon: 151.2093 },
+  ];
+
+  for (const city of cities) {
+    const radius = 5;
+    const phi = (90 - city.lat) * (Math.PI / 180);
+    const theta = (city.lon + 180) * (Math.PI / 180);
+
+    const x = -radius * Math.sin(phi) * Math.cos(theta);
+    const y = radius * Math.cos(phi);
+    const z = radius * Math.sin(phi) * Math.sin(theta);
+
+    // Rode bolletjes-marker toevoegen
+    const markerGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+    const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+    marker.position.set(x * 1.01, y * 1.01, z * 1.01);
+    earth.add(marker);
+
+    // Actuele temperatuur ophalen
+    const temp = await getWeatherData(city.name);
+
+    if (temp !== null) {
+      // Temperatuur afronden
+      const roundedTemp = Math.round(temp);
+
+      // Maak tekst met sprites
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      context.font = '20px Arial';
+      context.fillStyle = 'white';
+      context.fillText(`${city.name} - ${roundedTemp}°C`, 0, 20);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+      const sprite = new THREE.Sprite(spriteMaterial);
+      sprite.position.set(x * 1.05, y * 1.05, z * 1.05);
+      earth.add(sprite);
     }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error getting weather data:", error);
-    return null;
   }
 }
 
-async function displayWeather(city, index) {
-  const slide = document.querySelectorAll('.swiper-slide')[index];
-  const temperatureSpan = slide.querySelector('.temperature');
-  const loader = slide.querySelector('.loader');
+// Responsief maken
+window.addEventListener('resize', () => {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+});
 
-  try {
-    const coordinates = await getCoordinates(city.name);
-    if (coordinates) {
-      const weatherData = await getWeatherData(coordinates.lat, coordinates.lon);
-      if (weatherData) {
-        temperatureSpan.textContent = `${Math.round(weatherData.main.temp)}°C`;
-        loader.style.display = 'none';
-      } else {
-        temperatureSpan.textContent = "Error getting weather";
-        loader.style.display = 'none';
-      }
-    } else {
-      temperatureSpan.textContent = "Error getting location";
-      loader.style.display = 'none';
-    }
-  } catch (error) {
-    console.error("Error in displayWeather:", error);
-    temperatureSpan.textContent = "Error";
-    loader.style.display = 'none';
-  }
- 
-}
-
-
-cities.forEach((city, index) => {
-  displayWeather(city, index);
+// Swiper initialiseren
+const swiper = new Swiper('.swiper-container', {
+  pagination: {
+    el: '.swiper-pagination',
+  },
 });

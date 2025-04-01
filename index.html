@@ -1,29 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>swiper</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Roterende Aardbol</title>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <div class="container">
-      <h1>Swipe around the world.</h1>
-      <div class="swiper">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide"><img src="images/img1.jpg"><h4>Ghana</h4><div class="temperature-container"><span class="loader"></span><span class="temperature"></span></div></div>
-          <div class="swiper-slide"><img src="images/img2.jpg"><h4>Brussel</h4><div class="temperature-container"><span class="loader"></span><span class="temperature"></span></div></div>
-          <div class="swiper-slide"><img src="images/img3.jpg"><h4>Moscow</h4><div class="temperature-container"><span class="loader"></span><span class="temperature"></span></div></div>
-          <div class="swiper-slide"><img src="images/img4.jpg"><h4>Tokyo</h4><div class="temperature-container"><span class="loader"></span><span class="temperature"></span> </div></div>
-          <div class="swiper-slide"><img src="images/img5.jpg"><h4>Sydney</h4><div class="temperature-container"><span class="loader"></span><span class="temperature"></span> </div></div>
+    <div id="title">Slide Around The Globe</div>
+    <div class="swiper-container">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+          <div id="threejs-container"></div>
         </div>
-        <div class="swiper-pagination"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
+        <div class="swiper-slide">
+          <div id="city-details">
+            <p><strong class="city-link" data-city="Ghana">Ghana</strong>: Ghana was het eerste land in Afrika dat onafhankelijk werd van het Britse koloniale bestuur.</p>
+            <p><strong class="city-link" data-city="Brussel">Brussel</strong>: Brussel staat bekend als de chocoladehoofdstad van de wereld.</p>
+            <p><strong class="city-link" data-city="Moscow">Moskou</strong>: Moskou heeft meer miljonairs dan elke andere stad ter wereld.</p>
+            <p><strong class="city-link" data-city="Tokyo">Tokio</strong>: Tokio heeft de meeste Michelin-sterrenrestaurants ter wereld.</p>
+            <p><strong class="city-link" data-city="Sydney">Sydney</strong>: Sydney heeft meer dan 100 stranden.</p>
+          </div>
+        </div>
       </div>
+      <div class="swiper-pagination"></div>
     </div>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
